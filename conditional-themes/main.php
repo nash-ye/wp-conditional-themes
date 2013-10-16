@@ -323,21 +323,23 @@ class Conditional_Themes_Manager {
 			'theme' => $theme,
 		);
 
-		usort( self::$themes, function( $a, $b ) {
-
-			$p1 = (int) $a->priority;
-			$p2 = (int) $b->priority;
-
-			if ( $p1 === $p2 )
-				return 0;
-
-			return ( $p1 > $p2 ) ? +1 : -1;
-
-		} );
+		usort( self::$themes, array( __CLASS__, 'cmp_priorities' ) );
 
 		return true;
 
 	} // end register()
+
+	protected static function cmp_priorities( $a,$b ) {
+
+		$p1 = (int) $a->priority;
+		$p2 = (int) $b->priority;
+
+		if ( $p1 === $p2 )
+			return 0;
+
+		return ( $p1 > $p2 ) ? +1 : -1;
+
+	} // end cmp_priorities()
 
 	/**
 	 * Deregister a conditional theme.
