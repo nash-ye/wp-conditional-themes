@@ -4,8 +4,7 @@ A simple API to switch the themes on certain conditions.
 
 Basic Examples
 ==============
-
-`
+```
 // Switch to Twenty Thirteen theme on the morning only.
 Conditional_Themes_Manager::register( 'twentythirteen', function() {
 	
@@ -15,9 +14,9 @@ Conditional_Themes_Manager::register( 'twentythirteen', function() {
 	return false;
 
 } );
-`
+```
 
-`
+```
 // Switch to Twenty Ten theme when the user use Internet Explorer.
 Conditional_Themes_Manager::register( 'twentyten', function() {
 
@@ -25,4 +24,4 @@ Conditional_Themes_Manager::register( 'twentyten', function() {
 	return (bool) $is_IE;
 
 } );
-`
+```
