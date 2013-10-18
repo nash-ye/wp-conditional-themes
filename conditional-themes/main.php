@@ -12,14 +12,14 @@
  * Copyright (c) 2013 - 2014 Nashwan Doaqan.  All rights reserved.
  */
 
-add_action( 'plugins_loaded', array( 'Conditional_Themes_Switch', 'instance' ), 99 );
+add_action( 'plugins_loaded', array( 'Conditional_Themes_Switcher', 'instance' ), 99 );
 
 /**
- * Tne Conditional Themes Switch class.
+ * Tne Conditional Themes Switcher class.
  *
  * @since 0.1
  */
-class Conditional_Themes_Switch {
+class Conditional_Themes_Switcher {
 
 	/**
 	 * The switched theme object.
@@ -88,9 +88,9 @@ class Conditional_Themes_Switch {
 		$template = $this->get_template();
 
 		if ( ! empty( $template ) )
-			$$template_root = get_raw_theme_root( $template, true );
+			$template_root = get_raw_theme_root( $template, true );
 
-		return $$template_root;
+		return $template_root;
 
 	} // end get_template_root()
 
@@ -223,7 +223,7 @@ class Conditional_Themes_Switch {
 	private static $instance;
 
 	/**
-	 * Main Conditional Themes Switch Instance
+	 * Main Conditional Themes Switcher Instance
 	 *
 	 * @since 0.1
 	 */
@@ -231,7 +231,7 @@ class Conditional_Themes_Switch {
 
 		if ( ! isset( self::$instance ) ) {
 
-			self::$instance = new Conditional_Themes_Switch;
+			self::$instance = new Conditional_Themes_Switcher;
 			self::$instance->maybe_switch();
 
 		} // end if
@@ -240,7 +240,7 @@ class Conditional_Themes_Switch {
 
 	} // end instance()
 
-} // end class Conditional_Themes_Switch
+} // end class Conditional_Themes_Switcher
 
 /**
  * Tne Conditional Themes Manager class.
