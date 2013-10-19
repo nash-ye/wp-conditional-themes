@@ -42,6 +42,7 @@ class Conditional_Themes_Switcher {
 	/**
 	 * A dummy magic method to prevent the switcher from being cloned
 	 *
+	 * @return void
 	 * @since 0.1
 	 */
 	public function __clone() {
@@ -51,6 +52,7 @@ class Conditional_Themes_Switcher {
 	/**
 	 * A dummy magic method to prevent the switcher from being unserialized
 	 *
+	 * @return void
 	 * @since 0.1
 	 */
 	public function __wakeup() {
@@ -215,7 +217,7 @@ class Conditional_Themes_Switcher {
 	} // end maybe_switch()
 
 
-	/** Singleton *********************************************************/
+	/** Singleton *************************************************************/
 
 	private static $instance;
 
@@ -255,7 +257,7 @@ class Conditional_Themes_Manager {
 	protected static $themes = array();
 
 
-	/** Magic Methods *****************************************************/
+	/** Magic Methods *********************************************************/
 
 	/**
 	 * A dummy constructor.
@@ -265,7 +267,7 @@ class Conditional_Themes_Manager {
 	private function __construct() {}
 
 
-	//*** Static Methods **************************************************/
+	//*** Static Methods ******************************************************/
 
 	/**
 	 * Get the conditional themes list.
