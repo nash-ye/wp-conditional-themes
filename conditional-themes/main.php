@@ -258,7 +258,7 @@ class Conditional_Themes_Manager {
 	/** Magic Methods *****************************************************/
 
 	/**
-	 * A dummy constructor to prevent the class from being loaded more than once.
+	 * A dummy constructor.
 	 *
 	 * @since 0.1
 	 */
