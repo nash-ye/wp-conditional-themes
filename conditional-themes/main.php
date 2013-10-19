@@ -267,24 +267,6 @@ class Conditional_Themes_Manager {
 	 */
 	private function __construct() {}
 
-	/**
-	 * A dummy magic method to prevent the object from being cloned
-	 *
-	 * @since 0.1
-	 */
-	public function __clone() {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?' ), '0.1' );
-	} // end __clone()
-
-	/**
-	 * A dummy magic method to prevent the object from being unserialized
-	 *
-	 * @since 0.1
-	 */
-	public function __wakeup() {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?' ), '0.1' );
-	} // end __wakeup()
-
 
 	//*** Static Methods **************************************************/
 
