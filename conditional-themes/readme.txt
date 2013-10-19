@@ -37,9 +37,7 @@ Conditional_Themes_Manager::register( 'twentythirteen', function() {
 
 `
 // Switch to a custom theme if the visitor use a mobile device.
-Conditional_Themes_Manager::register( 'mobile', function() {
-    return wp_is_mobile();
-} );
+Conditional_Themes_Manager::register( 'mobile', 'wp_is_mobile' );
 `
 
 = Contributing =
