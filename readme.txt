@@ -2,8 +2,8 @@
 Contributors: alex-ye
 Tags: theme, themes, theme-switcher, switch, api
 Requires at least: 3.4
-Tested up to: 4.0
-Stable tag: 0.2
+Tested up to: 4.1
+Stable tag: 0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,31 @@ function my_conditional_themes_setup() {
 }
 `
 
+Another example, With enabling persistent mode.
+
+`
+add_action( 'plugins_loaded', 'my_conditional_themes_setup', 100 );
+
+function my_conditional_themes_setup() {
+
+    // Enable the switcher persistent mode.
+    Conditional_Themes_Switcher::set_option( 'persistent', TRUE );
+
+    // Switch to Twenty Sixteen theme when we being on 2016.
+    Conditional_Themes_Manager::register( 'twentysixteen', function() {
+        return ( date( 'Y' ) == 2016 );
+    } );
+
+    // Switch to Twenty Fifteen theme when the site reaches 500 post.
+    Conditional_Themes_Manager::register( 'twentyfifteen', function() {
+        return ( (int) wp_count_posts() > 500 );
+    } );
+
+}
+`
+
+Note: You can use [Code Snippets](https://wordpress.org/plugins/code-snippets) plugin to add the code snippets to your site.
+
 = Contributing =
 Developers can contribute to the source code on the [Github Repository](https://github.com/nash-ye/WP-Conditional-Themes).
 
@@ -47,6 +72,10 @@ Developers can contribute to the source code on the [Github Repository](https://
 2. Use the plugin API to powerful your project.
 
 == Changelog ==
+
+= 0.3 =
+* Add a new feature allow to switch the themes persistently.
+* Improve the performance by excluding the original theme from being switched.
 
 = 0.2 =
 * Cleaner code and minor fixes.

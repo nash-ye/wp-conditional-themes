@@ -27,3 +27,26 @@ function my_conditional_themes_setup() {
 
 }
 ```
+
+Another example, With enabling persistent mode.
+
+```
+add_action( 'plugins_loaded', 'my_conditional_themes_setup', 100 );
+
+function my_conditional_themes_setup() {
+
+    // Enable the switcher persistent mode.
+    Conditional_Themes_Switcher::set_option( 'persistent', TRUE );
+
+    // Switch to Twenty Sixteen theme when we being on 2016.
+    Conditional_Themes_Manager::register( 'twentysixteen', function() {
+        return ( date( 'Y' ) == 2016 );
+    } );
+
+    // Switch to Twenty Fifteen theme when the site reaches 500 post.
+    Conditional_Themes_Manager::register( 'twentyfifteen', function() {
+        return ( (int) wp_count_posts() > 500 );
+    } );
+
+}
+```

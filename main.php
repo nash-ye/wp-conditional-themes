@@ -5,7 +5,7 @@
  * Description: A simple API to switch the themes on certain conditions.
  * Author: Nashwan Doaqan
  * Author URI: http://nashwan-d.com
- * Version: 0.2
+ * Version: 0.3
  *
  * License: GPL2+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -22,12 +22,20 @@ add_action( 'plugins_loaded', array( 'Conditional_Themes_Switcher', 'instance' )
 class Conditional_Themes_Switcher {
 
 	/**
-	 * The switched theme object.
+	 * The original theme.
+	 *
+	 * @var WP_Theme
+	 * @since 0.3
+	 */
+	private $original_theme = NULL;
+
+	/**
+	 * The switched theme.
 	 *
 	 * @var WP_Theme
 	 * @since 0.1
 	 */
-	private $switched_theme;
+	private $switched_theme = NULL;
 
 
 	/** Methods ***************************************************************/
@@ -161,23 +169,37 @@ class Conditional_Themes_Switcher {
 			return $this->switched_theme;
 		}
 
-		foreach( Conditional_Themes_Manager::get_list() as $obj ) {
+		$cts = Conditional_Themes_Manager::get_all();
 
-			if ( is_callable( $obj->condition ) ) {
+		if ( is_array( $cts ) && ! empty( $cts ) ) {
 
-				$obj->condition = call_user_func( $obj->condition );
-				$obj->condition = (bool) $obj->condition;
+			foreach( $cts as $ct ) {
 
-			}
+				if ( ! is_null( $this->original_theme ) ) {
 
-			if ( is_bool( $obj->condition ) && $obj->condition ) {
+					if ( $ct->theme === $this->original_theme->get_stylesheet() ) {
+						continue;
+					}
 
-				$theme = wp_get_theme( $obj->theme );
+				}
 
-				if ( ! $theme->errors() && $theme->is_allowed() ) {
+				if ( ! empty( $ct->condition ) && is_callable( $ct->condition ) ) {
 
-					$this->switched_theme = $theme;
-					break;
+					$ct->condition = call_user_func( $ct->condition );
+					$ct->condition = (bool) $ct->condition;
+
+				}
+
+				if ( is_bool( $ct->condition ) && $ct->condition ) {
+
+					$theme = wp_get_theme( $ct->theme );
+
+					if ( $theme->exists() && $theme->is_allowed() ) {
+
+						$this->switched_theme = $theme;
+						break;
+
+					}
 
 				}
 
@@ -186,7 +208,7 @@ class Conditional_Themes_Switcher {
 		}
 
 		if ( empty( $this->switched_theme ) ) {
-			$this->switched_theme = false;
+			$this->switched_theme = FALSE;
 		}
 
 		return $this->switched_theme;
@@ -201,16 +223,29 @@ class Conditional_Themes_Switcher {
 	 */
 	public function setup_switched_theme() {
 
-		add_filter( 'pre_option_stylesheet_root', array( $this, 'get_stylesheet_root' ) );
-		add_filter( 'pre_option_template_root', array( $this, 'get_template_root' ) );
+		$this->original_theme = wp_get_theme();
 
-		add_filter( 'pre_option_current_theme', array( $this, 'current_theme' ) );
+		if ( self::get_option( 'persistent' ) ) {
 
-		add_filter( 'pre_option_stylesheet', array( $this, 'get_stylesheet' ) );
-		add_filter( 'pre_option_template', array( $this, 'get_template' ) );
+			$theme = $this->get_switched_theme();
 
-		add_filter( 'stylesheet', array( $this, 'get_stylesheet' ), 1 );
-		add_filter( 'template', array( $this, 'get_template' ), 1 );
+			if ( ! empty( $theme ) ) {
+				switch_theme( $theme->get_stylesheet() );
+			}
+
+		} else {
+
+			add_filter( 'template', array( $this, 'get_template' ), 1 );
+			add_filter( 'stylesheet', array( $this, 'get_stylesheet' ), 1 );
+
+			add_filter( 'pre_option_template', array( $this, 'get_template' ) );
+			add_filter( 'pre_option_stylesheet', array( $this, 'get_stylesheet' ) );
+			add_filter( 'pre_option_current_theme', array( $this, 'current_theme' ) );
+
+			add_filter( 'pre_option_template_root', array( $this, 'get_template_root' ) );
+			add_filter( 'pre_option_stylesheet_root', array( $this, 'get_stylesheet_root' ) );
+
+		}
 
 	}
 
@@ -226,7 +261,17 @@ class Conditional_Themes_Switcher {
 
 	/** Singleton *************************************************************/
 
-	private static $instance;
+	/**
+	 * @var Conditional_Themes_Switcher
+	 * @since 0.1
+	 */
+	private static $instance = NULL;
+
+	/**
+	 * @var array
+	 * @since 0.1
+	 */
+	private static $options = array();
 
 	/**
 	 * Main Conditional Themes Switcher Instance
@@ -235,7 +280,7 @@ class Conditional_Themes_Switcher {
 	 */
 	public static function instance() {
 
-		if ( ! isset( self::$instance ) ) {
+		if ( is_null( self::$instance ) ) {
 
 			self::$instance = new Conditional_Themes_Switcher;
 			self::$instance->maybe_switch();
@@ -244,6 +289,50 @@ class Conditional_Themes_Switcher {
 
 		return self::$instance;
 
+	}
+
+	/**
+	 * Retrieve all options.
+	 *
+	 * @return array
+	 * @since 0.3
+	 */
+	public static function get_options() {
+		return self::$options;
+	}
+
+	/**
+	 * Retrieve an option value.
+	 *
+	 * @return mixed
+	 * @since 0.3
+	 */
+	public static function get_option( $key ) {
+
+		if ( isset( self::$options[ $key ] ) ) {
+			return self::$options[ $key ];
+		}
+
+	}
+
+	/**
+	 * Set an option value.
+	 *
+	 * @return void
+	 * @since 0.3
+	 */
+	public static function set_option( $key, $value ) {
+		self::$options[ $key ] = $value;
+	}
+
+	/**
+	 * Set the options.
+	 *
+	 * @return void
+	 * @since 0.3
+	 */
+	public static function set_options( array $options ) {
+		self::$options = $options;
 	}
 
 }
@@ -277,13 +366,13 @@ class Conditional_Themes_Manager {
 	//*** Static Methods ******************************************************/
 
 	/**
-	 * Get the conditional themes list.
+	 * Get all registered conditional themes.
 	 *
 	 * @return array
-	 * @since 0.1
+	 * @since 0.3
 	 */
-	public static function get_list( $args = array(), $operator = 'AND' ) {
-		return wp_list_filter( self::$themes, $args, $operator );
+	public static function get_all() {
+		return self::$themes;
 	}
 
 	/**
@@ -310,8 +399,8 @@ class Conditional_Themes_Manager {
 
 		self::$themes[ $theme ] = (object) array(
 			'condition' => $condition,
-			'priority' => $priority,
-			'theme' => $theme,
+			'priority'  => $priority,
+			'theme'     => $theme,
 		);
 
 		uasort( self::$themes, array( __CLASS__, 'cmp_priorities' ) );
