@@ -3,7 +3,7 @@ Contributors: alex-ye
 Tags: theme, themes, theme-switcher, switch, api
 Requires at least: 3.4
 Tested up to: 4.1
-Stable tag: 0.3
+Stable tag: 0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,7 +46,7 @@ add_action( 'plugins_loaded', 'my_conditional_themes_setup', 100 );
 function my_conditional_themes_setup() {
 
     // Enable the switcher persistent mode.
-    Conditional_Themes_Switcher::set_option( 'persistent', TRUE );
+    Conditional_Themes_Manager::set_option( 'persistent', TRUE );
 
     // Switch to Twenty Sixteen theme when we being on 2016.
     Conditional_Themes_Manager::register( 'twentysixteen', function() {
@@ -72,6 +72,10 @@ Developers can contribute to the source code on the [Github Repository](https://
 2. Use the plugin API to powerful your project.
 
 == Changelog ==
+
+= 0.4 =
+* Fix the switched theme sidebars widgets bug, props @joyously.
+* Better functions names and code organization.
 
 = 0.3 =
 * Add a new feature allow to switch the themes persistently.

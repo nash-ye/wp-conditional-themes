@@ -68,66 +68,32 @@ class Conditional_Themes_Switcher {
 	}
 
 	/**
-	 * Get the stylesheet (child) theme root path.
+	 * Get the switched template (parent) theme directory name.
+	 * Used as a callback for 'template' and 'pre_option_template' WP filters.
 	 *
 	 * @return string
-	 * @since 0.1
+	 * @since 0.4
 	 */
-	public function get_stylesheet_root( $stylesheet_root = '' ) {
-
-		$stylesheet = $this->get_stylesheet();
-
-		if ( ! empty( $stylesheet ) ) {
-			$stylesheet_root = get_raw_theme_root( $stylesheet, true );
-		}
-
-		return $stylesheet_root;
-
-	}
-
-	/**
-	 * Get the template (parent) theme root path.
-	 *
-	 * @return string
-	 * @since 0.1
-	 */
-	public function get_template_root( $template_root = '' ) {
-
-		$template = $this->get_template();
-
-		if ( ! empty( $template ) ) {
-			$template_root = get_raw_theme_root( $template, true );
-		}
-
-		return $template_root;
-
-	}
-
-	/**
-	 * Get the current theme name.
-	 *
-	 * @return string
-	 * @since 0.1
-	 */
-	public function current_theme( $current_theme = '' ) {
+	public function filter_template( $template = '' ) {
 
 		$theme = $this->get_switched_theme();
 
 		if ( $theme instanceof WP_Theme ) {
-			$current_theme = $theme->display( 'Name' );
+			$template = $theme->get_template();
 		}
 
-		return $current_theme;
+		return $template;
 
 	}
 
 	/**
-	 * Get the stylesheet (child) theme directory name.
+	 * Get the switched stylesheet (child) theme directory name.
+	 * Used as a callback for 'stylesheet' and 'pre_option_stylesheet' WP filters.
 	 *
 	 * @return string
-	 * @since 0.1
+	 * @since 0.4
 	 */
-	public function get_stylesheet( $stylesheet ='' ) {
+	public function filter_stylesheet( $stylesheet ='' ) {
 
 		$theme = $this->get_switched_theme();
 
@@ -140,20 +106,82 @@ class Conditional_Themes_Switcher {
 	}
 
 	/**
-	 * Get the template (parent) theme directory name.
+	 * Get the switched theme name.
+	 * Used as a callback for 'current_theme' WP filter.
 	 *
 	 * @return string
-	 * @since 0.1
+	 * @since 0.4
 	 */
-	public function get_template( $template = '' ) {
+	public function filter_current_theme( $current_theme = '' ) {
 
 		$theme = $this->get_switched_theme();
 
 		if ( $theme instanceof WP_Theme ) {
-			$template = $theme->get_template();
+			$current_theme = $theme->display( 'Name' );
 		}
 
-		return $template;
+		return $current_theme;
+
+	}
+
+	/**
+	 * Get the switched template (parent) theme root path.
+	 * Used as a callback for 'pre_option_template_root' WP filter.
+	 *
+	 * @return string
+	 * @since 0.4
+	 */
+	public function filter_template_root( $template_root = '' ) {
+
+		$template = $this->get_template();
+
+		if ( ! empty( $template ) ) {
+			$template_root = get_raw_theme_root( $template, true );
+		}
+
+		return $template_root;
+
+	}
+
+	/**
+	 * Get the switched stylesheet (child) theme root path.
+	 * Used as a callback for 'pre_option_stylesheet_root' WP filter.
+	 *
+	 * @return string
+	 * @since 0.4
+	 */
+	public function filter_stylesheet_root( $stylesheet_root = '' ) {
+
+		$stylesheet = $this->get_stylesheet();
+
+		if ( ! empty( $stylesheet ) ) {
+			$stylesheet_root = get_raw_theme_root( $stylesheet, true );
+		}
+
+		return $stylesheet_root;
+
+	}
+
+	/**
+	 * Get the switched theme sidebars widgets.
+	 * Used as a callback for 'pre_option_sidebars_widgets' WP filter.
+	 *
+	 * @return array
+	 * @since 0.4
+	 */
+	public function filter_sidebars_widgets( $sidebars_widgets = FALSE ) {
+
+		if ( FALSE === $sidebars_widgets ) {
+
+			$current_sidebars_widgets = get_theme_mod( 'sidebars_widgets' );
+
+			if ( is_array( $current_sidebars_widgets ) ) {
+				$sidebars_widgets = $current_sidebars_widgets['data'];
+			}
+
+		}
+
+		return $sidebars_widgets;
 
 	}
 
@@ -225,7 +253,7 @@ class Conditional_Themes_Switcher {
 
 		$this->original_theme = wp_get_theme();
 
-		if ( self::get_option( 'persistent' ) ) {
+		if ( Conditional_Themes_Manager::get_option( 'persistent' ) ) {
 
 			$theme = $this->get_switched_theme();
 
@@ -235,15 +263,16 @@ class Conditional_Themes_Switcher {
 
 		} else {
 
-			add_filter( 'template', array( $this, 'get_template' ), 1 );
-			add_filter( 'stylesheet', array( $this, 'get_stylesheet' ), 1 );
+			add_filter( 'template', array( $this, 'filter_template' ), 1 );
+			add_filter( 'stylesheet', array( $this, 'filter_stylesheet' ), 1 );
 
-			add_filter( 'pre_option_template', array( $this, 'get_template' ) );
-			add_filter( 'pre_option_stylesheet', array( $this, 'get_stylesheet' ) );
-			add_filter( 'pre_option_current_theme', array( $this, 'current_theme' ) );
+			add_filter( 'pre_option_template', array( $this, 'filter_template' ) );
+			add_filter( 'pre_option_stylesheet', array( $this, 'filter_stylesheet' ) );
+			add_filter( 'pre_option_current_theme', array( $this, 'filter_current_theme' ) );
 
-			add_filter( 'pre_option_template_root', array( $this, 'get_template_root' ) );
-			add_filter( 'pre_option_stylesheet_root', array( $this, 'get_stylesheet_root' ) );
+			add_filter( 'pre_option_template_root', array( $this, 'filter_template_root' ) );
+			add_filter( 'pre_option_stylesheet_root', array( $this, 'filter_stylesheet_root' ) );
+			add_filter( 'pre_option_sidebars_widgets', array( $this, 'filter_sidebars_widgets' ) );
 
 		}
 
@@ -268,12 +297,6 @@ class Conditional_Themes_Switcher {
 	private static $instance = NULL;
 
 	/**
-	 * @var array
-	 * @since 0.1
-	 */
-	private static $options = array();
-
-	/**
 	 * Main Conditional Themes Switcher Instance
 	 *
 	 * @since 0.1
@@ -289,50 +312,6 @@ class Conditional_Themes_Switcher {
 
 		return self::$instance;
 
-	}
-
-	/**
-	 * Retrieve all options.
-	 *
-	 * @return array
-	 * @since 0.3
-	 */
-	public static function get_options() {
-		return self::$options;
-	}
-
-	/**
-	 * Retrieve an option value.
-	 *
-	 * @return mixed
-	 * @since 0.3
-	 */
-	public static function get_option( $key ) {
-
-		if ( isset( self::$options[ $key ] ) ) {
-			return self::$options[ $key ];
-		}
-
-	}
-
-	/**
-	 * Set an option value.
-	 *
-	 * @return void
-	 * @since 0.3
-	 */
-	public static function set_option( $key, $value ) {
-		self::$options[ $key ] = $value;
-	}
-
-	/**
-	 * Set the options.
-	 *
-	 * @return void
-	 * @since 0.3
-	 */
-	public static function set_options( array $options ) {
-		self::$options = $options;
 	}
 
 }
@@ -351,6 +330,12 @@ class Conditional_Themes_Manager {
 	 * @since 0.1
 	 */
 	protected static $themes = array();
+
+	/**
+	 * @var array
+	 * @since 0.4
+	 */
+	protected static $options = array();
 
 
 	/** Magic Methods *********************************************************/
@@ -373,6 +358,50 @@ class Conditional_Themes_Manager {
 	 */
 	public static function get_all() {
 		return self::$themes;
+	}
+
+	/**
+	 * Retrieve all options.
+	 *
+	 * @return array
+	 * @since 0.4
+	 */
+	public static function get_options() {
+		return self::$options;
+	}
+
+	/**
+	 * Retrieve an option value.
+	 *
+	 * @return mixed
+	 * @since 0.4
+	 */
+	public static function get_option( $key ) {
+
+		if ( isset( self::$options[ $key ] ) ) {
+			return self::$options[ $key ];
+		}
+
+	}
+
+	/**
+	 * Set an option value.
+	 *
+	 * @return void
+	 * @since 0.4
+	 */
+	public static function set_option( $key, $value ) {
+		self::$options[ $key ] = $value;
+	}
+
+	/**
+	 * Set the options.
+	 *
+	 * @return void
+	 * @since 0.4
+	 */
+	public static function set_options( array $options ) {
+		self::$options = $options;
 	}
 
 	/**

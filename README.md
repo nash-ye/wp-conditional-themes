@@ -36,7 +36,7 @@ add_action( 'plugins_loaded', 'my_conditional_themes_setup', 100 );
 function my_conditional_themes_setup() {
 
     // Enable the switcher persistent mode.
-    Conditional_Themes_Switcher::set_option( 'persistent', TRUE );
+    Conditional_Themes_Manager::set_option( 'persistent', TRUE );
 
     // Switch to Twenty Sixteen theme when we being on 2016.
     Conditional_Themes_Manager::register( 'twentysixteen', function() {
