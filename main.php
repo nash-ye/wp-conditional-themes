@@ -5,7 +5,7 @@
  * Description: A simple API to switch the themes on certain conditions.
  * Author: Nashwan Doaqan
  * Author URI: http://nashwan-d.com
- * Version: 0.3
+ * Version: 0.4
  *
  * License: GPL2+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
