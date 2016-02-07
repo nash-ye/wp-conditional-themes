@@ -2,8 +2,8 @@
 Contributors: alex-ye
 Tags: theme, themes, theme-switcher, switch, api
 Requires at least: 3.4
-Tested up to: 4.1
-Stable tag: 0.4
+Tested up to: 4.4.2
+Stable tag: 0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -72,6 +72,10 @@ Developers can contribute to the source code on the [Github Repository](https://
 2. Use the plugin API to powerful your project.
 
 == Changelog ==
+
+= 0.4 =
+* Fix updating switched theme sidebars widgets bug, props @Offereins.
+* Better classes and code organization.
 
 = 0.4 =
 * Fix the switched theme sidebars widgets bug, props @joyously.
